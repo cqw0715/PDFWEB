@@ -29,58 +29,55 @@
         .editor-toolbar button:hover { background: #e5e7eb; }
         .editor-toolbar button.active { background: #d1d5db; }
         
-        /* 预览区模拟A4纸张效果 */
         .a4-preview {
             background: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             min-height: 800px;
             position: relative;
-            overflow: visible; 
         }
 
-        /* 深度优化的表格样式 */
         .pdf-table {
             width: 100% !important;
-            table-layout: fixed;
+            table-layout: auto; 
             border-collapse: collapse;
             margin-bottom: 1rem;
             font-size: 12px;
             color: #333;
             word-break: break-all;
+            background: white;
         }
-        .pdf-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            border: 1px solid #d1d5db;
-            padding: 6px 4px;
-            text-align: center;
-        }
-        .pdf-table td {
+        .pdf-table th, .pdf-table td {
             border: 1px solid #d1d5db;
             padding: 6px 4px;
             text-align: center;
             vertical-align: middle;
         }
-        .col-index {
-            width: 40px;
-        }
+        .pdf-table th { background-color: #f8f9fa; font-weight: bold; }
+        .col-index { width: 50px; }
+	.table-caption {
+    		text-align: center;
+   		 font-weight: bold;
+   		 font-size: 16px;
+   		 margin-bottom: 8px;
+   		 white-space: nowrap;
+    		overflow: visible;
+    		max-width: 100%;
+	}
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
     <div class="max-w-6xl mx-auto p-6">
         <header class="mb-6 text-center">
-            <h1 class="text-3xl font-bold text-blue-700 mb-2">PDF文档生成</h1>
-            <p class="text-gray-500 text-sm">左侧预览 | 右侧上传 </p>
+            <h1 class="text-3xl font-bold text-blue-700 mb-2">PDF 文档生成</h1>
+            <p class="text-gray-500 text-sm">左侧预览文档 | 右侧上传数据</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
             <div class="lg:col-span-7 flex flex-col">
                 <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 flex-1 overflow-y-auto h-[85vh]">
-                    <h3 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wide">文档预览</h3>
-                    
-                    <div id="previewContent" class="a4-preview p-8 rounded border border-gray-200 text-gray-800 leading-relaxed bg-white">
+                    <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wide">文档预览</h3>
+                    <div id="previewContent" class="a4-preview p-8 rounded border border-gray-100 leading-relaxed">
                         <div id="emptyState" class="flex items-center justify-center h-64 text-gray-300">
                             <div class="text-center">
                                 <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -92,60 +89,48 @@
             </div>
 
             <div class="lg:col-span-5 space-y-6 h-[85vh] overflow-y-auto pr-2">
-                
                 <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-blue-500">
-                    <h2 class="text-lg font-bold mb-3 flex items-center text-gray-700">文字编辑</h2>
+                    <h2 class="text-lg font-bold mb-3 text-gray-700">文字编辑</h2>
                     <div class="editor-toolbar mb-2 flex flex-wrap items-center gap-2">
                         <select id="fontSizeSelect" onchange="formatDoc('fontSize', this.value)" class="text-xs border rounded px-2 py-1 bg-white">
-                            <option value="1">极小</option>
-                            <option value="2">小号</option>
+                            <option value="1">极小</option><option value="2">小号</option>
                             <option value="3" selected>正常</option>
-                            <option value="4">中号</option>
-                            <option value="5">大号</option>
-                            <option value="6">很大</option>
-                            <option value="7">极大</option>
+                            <option value="4">中号</option><option value="5">大号</option><option value="6">很大</option><option value="7">极大</option>
                         </select>
-                        
-                        <button onclick="formatDoc('bold')">B</button>
-                        <button onclick="formatDoc('italic')">I</button>
-                        <button onclick="formatDoc('underline')">U</button>
-                        
-                        <button onclick="formatDoc('justifyLeft')" title="左对齐">←</button>
-                        <button onclick="formatDoc('justifyCenter')" title="居中">↔</button>
-                        <button onclick="formatDoc('justifyRight')" title="右对齐">→</button>
-                        
-                        <input type="color" id="textColorPicker" onchange="formatDoc('foreColor', this.value)" class="w-8 h-8 p-0 border-0 rounded cursor-pointer">
+                        <button onclick="formatDoc('bold')" title="加粗">B</button>
+                        <button onclick="formatDoc('italic')" title="斜体">I</button>
+                        <button onclick="formatDoc('underline')" title="下划线">U</button>
+                        <button onclick="formatDoc('justifyLeft')">左</button>
+                        <button onclick="formatDoc('justifyCenter')">中</button>
+                        <button onclick="formatDoc('justifyRight')">右</button>
+                        <input type="color" id="textColorPicker" onchange="formatDoc('foreColor', this.value)" class="w-8 h-8 p-0 border-0 rounded cursor-pointer" title="文字颜色">
                     </div>
-                    <div id="textEditor" contenteditable="true" class="w-full h-40 border border-gray-300 rounded p-3 overflow-y-auto focus:ring-2 focus:ring-blue-200 text-base bg-white mb-3">
-                        
-                    </div>
-                    <button onclick="addTextToQueue()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded shadow text-sm">
-                        添加此段文字到文档
-                    </button>
+                    <div id="textEditor" contenteditable="true" class="w-full h-40 border border-gray-300 rounded p-3 overflow-y-auto focus:ring-2 focus:ring-blue-200 bg-white mb-3"></div>
+                    <button onclick="addTextToQueue()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded text-sm transition">添加此段文字到文档</button>
                 </div>
 
                 <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-green-500">
-                    <h2 class="text-lg font-bold mb-3">图片管理</h2>
+                    <h2 class="text-lg font-bold mb-3 text-gray-700">图片管理</h2>
                     <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-2">
                             <div><label class="block text-xs text-gray-500 mb-1">宽度比例 (%)</label><input type="number" id="imgWidth" value="80" class="w-full border rounded px-2 py-1 text-sm"></div>
                             <div><label class="block text-xs text-gray-500 mb-1">图片标题</label><input type="text" id="imgCaption" class="w-full border rounded px-2 py-1 text-sm"></div>
                         </div>
-                        <input type="file" id="imageInput" accept="image/*" multiple class="block w-full text-sm"/>
-                        <button onclick="addImageToQueue()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded">添加到文档</button>
+                        <input type="file" id="imageInput" accept="image/*" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
+                        <button onclick="addImageToQueue()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">添加到文档</button>
                     </div>
                 </div>
 
                 <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-500">
-                    <h2 class="text-lg font-bold mb-3">表格管理</h2>
+                    <h2 class="text-lg font-bold mb-3 text-gray-700">表格管理</h2>
                     <div class="space-y-3">
                         <input type="text" id="tableCaption" placeholder="表格标题" class="w-full border rounded px-2 py-1 text-sm">
-                        <input type="file" id="tableInput" accept=".xlsx, .xls, .csv" multiple class="block w-full text-sm"/>
-                        <button onclick="addTableToQueue()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded">解析并添加到文档</button>
+                        <input type="file" id="tableInput" accept=".xlsx, .xls, .csv" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"/>
+                        <button onclick="addTableToQueue()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded transition">解析并添加到文档</button>
                     </div>
                 </div>
 
-                <button id="generateBtn" onclick="generatePDF()" class="w-full bg-blue-600 hover:bg-blue-800 text-white text-lg font-bold py-3 rounded shadow-lg sticky bottom-0 z-20">
+                <button id="generateBtn" onclick="generatePDF()" class="w-full bg-blue-600 hover:bg-blue-800 text-white text-lg font-bold py-4 rounded-xl shadow-lg sticky bottom-0 z-20 transition-all active:transform active:scale-95">
                     生成 PDF 文档
                 </button>
             </div>
@@ -153,48 +138,61 @@
     </div>
 
     <script>
+        /**
+         * 核心状态与配置
+         */
         let contentQueue = [];
+        const PDF_CONFIG = {
+            pageWidth: 210,
+            pageHeight: 297,
+            margin: 15,
+            imageQuality: 0.95
+        };
 
-        // 修复：确保编辑器获得焦点并正确执行命令
+        const elements = {
+            preview: document.getElementById('previewContent'),
+            emptyState: document.getElementById('emptyState'),
+            editor: document.getElementById('textEditor'),
+            imageInput: document.getElementById('imageInput'),
+            tableInput: document.getElementById('tableInput'),
+            genBtn: document.getElementById('generateBtn')
+        };
+
         function formatDoc(cmd, value = null) {
-            const editor = document.getElementById('textEditor');
-            editor.focus();
+            elements.editor.focus();
             document.execCommand(cmd, false, value);
         }
 
         function addTextToQueue() {
-            const editor = document.getElementById('textEditor');
-            if (editor.innerText.trim() === "") return;
-            // 获取 innerHTML 以保留对齐和字体样式
-            contentQueue.push({ type: 'text', id: Date.now() + Math.random(), content: editor.innerHTML });
-            editor.innerHTML = ""; 
+            const content = elements.editor.innerHTML.trim();
+            if (!content || content === "<br>") return;
+            contentQueue.push({ type: 'text', id: Date.now() + Math.random(), content: content });
+            elements.editor.innerHTML = "";
             renderPreview();
         }
 
         function addImageToQueue() {
-            const input = document.getElementById('imageInput');
-            const width = document.getElementById('imgWidth').value;
+            const width = document.getElementById('imgWidth').value || 80;
             const caption = document.getElementById('imgCaption').value;
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
+            if (elements.imageInput.files.length > 0) {
+                Array.from(elements.imageInput.files).forEach(file => {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = (e) => {
                         contentQueue.push({ type: 'image', id: Date.now() + Math.random(), src: e.target.result, width: width, caption: caption });
                         renderPreview();
                     };
                     reader.readAsDataURL(file);
                 });
-                input.value = '';
+                elements.imageInput.value = '';
             }
         }
 
         function addTableToQueue() {
-            const input = document.getElementById('tableInput');
             const caption = document.getElementById('tableCaption').value;
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => {
+            if (elements.tableInput.files.length > 0) {
+                Array.from(elements.tableInput.files).forEach(file => {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = (e) => {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
@@ -205,7 +203,7 @@
                     };
                     reader.readAsArrayBuffer(file);
                 });
-                input.value = '';
+                elements.tableInput.value = '';
             }
         }
 
@@ -215,116 +213,146 @@
         }
 
         function renderPreview() {
-            const container = document.getElementById('previewContent');
-            const emptyState = document.getElementById('emptyState');
-            container.innerHTML = '';
-            if (contentQueue.length === 0) { container.appendChild(emptyState); emptyState.style.display = 'flex'; return; }
+            elements.preview.innerHTML = '';
+            if (contentQueue.length === 0) {
+                elements.preview.appendChild(elements.emptyState);
+                elements.emptyState.style.display = 'flex';
+                return;
+            }
+            elements.emptyState.style.display = 'none';
 
             contentQueue.forEach((item) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = "relative group mb-6 pb-4 border-b border-gray-100 last:border-0";
+                wrapper.className = "preview-item relative group mb-6 pb-4 border-b border-gray-100 last:border-0";
                 
                 const delBtn = document.createElement('button');
                 delBtn.innerHTML = '&times;';
                 delBtn.className = "del-btn absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg z-10 transform translate-x-1/2 -translate-y-1/2";
-                delBtn.onclick = (e) => { e.stopPropagation(); removeContent(item.id); };
+                delBtn.onclick = () => removeContent(item.id);
                 wrapper.appendChild(delBtn);
 
                 if (item.type === 'text') {
-                    const textDiv = document.createElement('div');
-                    textDiv.className = "break-words";
-                    textDiv.innerHTML = item.content;
-                    wrapper.appendChild(textDiv);
+                    const div = document.createElement('div');
+                    div.className = "break-words";
+                    div.innerHTML = item.content;
+                    wrapper.appendChild(div);
                 } else if (item.type === 'image') {
-                    const imgEl = document.createElement('img');
-                    imgEl.src = item.src; imgEl.style.width = `${item.width}%`;
-                    imgEl.className = "mx-auto rounded block";
-                    wrapper.appendChild(imgEl);
+                    const img = document.createElement('img');
+                    img.src = item.src;
+                    img.style.width = `${item.width}%`;
+                    img.className = "mx-auto rounded block";
+                    wrapper.appendChild(img);
                     if (item.caption) {
-                        const captionEl = document.createElement('p');
-                        captionEl.className = "text-sm font-bold mt-2 text-center text-gray-800";
-                        captionEl.innerText = item.caption;
-                        wrapper.appendChild(captionEl);
+                        const p = document.createElement('p');
+                        p.className = "text-sm font-bold mt-2 text-center text-gray-800";
+                        p.innerText = item.caption;
+                        wrapper.appendChild(p);
                     }
                 } else if (item.type === 'table') {
                     if (item.caption) {
-                        const cp = document.createElement('p');
-                        cp.className = "text-base font-bold mb-3 text-center text-gray-700";
-                        cp.innerText = item.caption;
-                        wrapper.appendChild(cp);
+                        const p = document.createElement('p');
+                        p.className = "text-base font-bold mb-3 text-center text-gray-700";
+                        p.innerText = item.caption;
+                        wrapper.appendChild(p);
                     }
-                    const tableEl = document.createElement('table');
-                    tableEl.className = "pdf-table";
+                    const table = document.createElement('table');
+                    table.className = "pdf-table";
                     item.data.forEach((row, i) => {
                         const tr = document.createElement('tr');
                         const idxTd = document.createElement(i === 0 ? 'th' : 'td');
-                        idxTd.className = (i === 0 ? "" : "bg-gray-50 ") + "col-index";
+                        idxTd.className = i === 0 ? "" : "bg-gray-50 col-index";
                         idxTd.innerText = i === 0 ? "序号" : i;
                         tr.appendChild(idxTd);
                         row.forEach(cell => {
                             const td = document.createElement(i === 0 ? 'th' : 'td');
-                            td.innerText = cell !== undefined ? cell : '';
+                            td.innerText = cell ?? '';
                             tr.appendChild(td);
                         });
-                        tableEl.appendChild(tr);
+                        table.appendChild(tr);
                     });
-                    wrapper.appendChild(tableEl);
+                    wrapper.appendChild(table);
                 }
-                container.appendChild(wrapper);
+                elements.preview.appendChild(wrapper);
             });
         }
 
-        async function generatePDF() {
-            const btn = document.getElementById('generateBtn');
-            const element = document.getElementById('previewContent');
-            if (contentQueue.length === 0) { alert("请先添加一些内容"); return; }
+        async function captureElement(el) {
+            const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+            return {
+                data: canvas.toDataURL('image/jpeg', PDF_CONFIG.imageQuality),
+                height: (canvas.height * (PDF_CONFIG.pageWidth - PDF_CONFIG.margin * 2)) / canvas.width
+            };
+        }
 
-            btn.innerText = "正在分页处理并导出...";
-            btn.disabled = true;
+        function getReadableTimestamp() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${d}_${hh}-${mm}`;
+        }
+
+        async function generatePDF() {
+            if (contentQueue.length === 0) return;
+            elements.genBtn.innerText = "正在排版生成...";
+            elements.genBtn.disabled = true;
 
             const delButtons = document.querySelectorAll('.del-btn');
             delButtons.forEach(b => b.style.setProperty('display', 'none', 'important'));
 
             try {
-                const canvas = await html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: "#ffffff",
-                    logging: false
-                });
-
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const imgWidth = 210;
-                const pageHeight = 297;
-                const canvasHeight = canvas.height;
-                const canvasWidth = canvas.width;
-                const totalImgHeightInPdf = (canvasHeight * imgWidth) / canvasWidth;
+                const { pageWidth, pageHeight, margin } = PDF_CONFIG;
+                let currentY = margin;
 
-                let heightLeft = totalImgHeightInPdf;
-                let position = 0;
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const items = elements.preview.querySelectorAll('.preview-item');
 
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, totalImgHeightInPdf);
-                heightLeft -= pageHeight;
+                for (let i = 0; i < items.length; i++) {
+                    const itemEl = items[i];
+                    const table = itemEl.querySelector('table');
 
-                while (heightLeft > 0) {
-                    position = heightLeft - totalImgHeightInPdf;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, totalImgHeightInPdf);
-                    heightLeft -= pageHeight;
+                    if (table) {
+                        const caption = itemEl.querySelector('p');
+                        if (caption) {
+                            const { data, height } = await captureElement(caption);
+                            if (currentY + height > pageHeight - margin) { pdf.addPage(); currentY = margin; }
+                            pdf.addImage(data, 'JPEG', margin, currentY, pageWidth - margin * 2, height);
+                            // 修复点：增加表名与表格之间的距离，防止重合
+                            currentY += height + 5; 
+                        }
+
+                        const rows = table.querySelectorAll('tr');
+                        for (let r = 0; r < rows.length; r++) {
+                            const { data, height } = await captureElement(rows[r]);
+                            if (currentY + height > pageHeight - margin) {
+                                pdf.addPage();
+                                currentY = margin;
+                            }
+                            pdf.addImage(data, 'JPEG', margin, currentY, pageWidth - margin * 2, height);
+                            currentY += height;
+                        }
+                        currentY += 5; 
+                    } else {
+                        const { data, height } = await captureElement(itemEl);
+                        if (currentY + height > pageHeight - margin) {
+                            pdf.addPage();
+                            currentY = margin;
+                        }
+                        pdf.addImage(data, 'JPEG', margin, currentY, pageWidth - margin * 2, height);
+                        currentY += height + 5;
+                    }
                 }
-
-                pdf.save('PDF保存文档.pdf');
-
+                pdf.save(`文档导出_${getReadableTimestamp()}.pdf`);
             } catch (err) {
                 console.error("PDF生成失败:", err);
-                alert("生成失败");
+                alert("生成失败，请检查控制台。");
             } finally {
                 delButtons.forEach(b => b.style.display = '');
-                btn.innerText = "生成 PDF 文档";
-                btn.disabled = false;
+                elements.genBtn.innerText = "生成 PDF 文档";
+                elements.genBtn.disabled = false;
             }
         }
     </script>
