@@ -117,7 +117,7 @@
                             <div><label class="block text-xs text-gray-500 mb-1">图片标题</label><input type="text" id="imgCaption" class="w-full border rounded px-2 py-1 text-sm"></div>
                         </div>
                         <input type="file" id="imageInput" accept="image/*" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
-                        <button onclick="addImageToQueue()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">添加到文档</button>
+                        <button onclick="addImageToQueue()" class="w-full bg-green-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">添加到文档</button>
                     </div>
                 </div>
 
@@ -155,19 +155,34 @@
             editor: document.getElementById('textEditor'),
             imageInput: document.getElementById('imageInput'),
             tableInput: document.getElementById('tableInput'),
-            genBtn: document.getElementById('generateBtn')
+            genBtn: document.getElementById('generateBtn'),
+            fontSizeSelect: document.getElementById('fontSizeSelect'),
+            colorPicker: document.getElementById('textColorPicker')
         };
 
+        // 优化格式化函数
         function formatDoc(cmd, value = null) {
-            elements.editor.focus();
+            elements.editor.focus(); // 确保焦点在编辑器上
+            
+            // 如果编辑器是空的，点击格式按钮可能无效，
+            // 此时可以插入一个临时的占位节点来承载样式，或者直接执行
             document.execCommand(cmd, false, value);
         }
 
         function addTextToQueue() {
             const content = elements.editor.innerHTML.trim();
-            if (!content || content === "<br>") return;
+            // 排除仅包含空行的情况
+            if (!content || content === "<br>" || content === "<div><br></div>") return;
+            
             contentQueue.push({ type: 'text', id: Date.now() + Math.random(), content: content });
+            
+            // 清空编辑器内容
             elements.editor.innerHTML = "";
+            
+            // 重置下拉框到默认值（可选），或确保下次输入时焦点正常
+            elements.fontSizeSelect.value = "3";
+            elements.colorPicker.value = "#000000";
+            
             renderPreview();
         }
 
@@ -320,7 +335,6 @@
                             const { data, height } = await captureElement(caption);
                             if (currentY + height > pageHeight - margin) { pdf.addPage(); currentY = margin; }
                             pdf.addImage(data, 'JPEG', margin, currentY, pageWidth - margin * 2, height);
-                            // 修复点：增加表名与表格之间的距离，防止重合
                             currentY += height + 5; 
                         }
 
